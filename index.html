@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Family Advent Calendar</title>
+<style>
+:root {
+  --red: #c62832;
+  --green: #176b45;
+  --gold: #ffcf58;
+  --cream: #fff8e8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  color: #244b3a;
+  background: linear-gradient(#78c8f5 0%, #dff4ff 48%, #fffdf7 100%);
+  overflow-x: hidden;
+}
+.snow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: .7;
+  background-image:
+    radial-gradient(4px 4px at 10% 20%, white 98%, transparent),
+    radial-gradient(3px 3px at 30% 60%, white 98%, transparent),
+    radial-gradient(5px 5px at 65% 25%, white 98%, transparent),
+    radial-gradient(3px 3px at 80% 75%, white 98%, transparent),
+    radial-gradient(4px 4px at 90% 45%, white 98%, transparent);
+  background-size: 180px 180px;
+  animation: snowfall 12s linear infinite;
+}
+@keyframes snowfall {
+  from { background-position: 0 0; }
+  to { background-position: 80px 180px; }
+}
+.village {
+  min-height: 100vh;
+  padding: 22px 14px 65px;
+  position: relative;
+  isolation: isolate;
+}
+.village::before {
+  content: "🏠 ❄️ 🌲 🏘️ 🌲 ❄️ 🏠";
+  position: absolute;
+  z-index: -1;
+  top: 145px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(28px, 5vw, 62px);
+  letter-spacing: 8px;
+  opacity: .85;
+}
+.village::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -5%;
+  bottom: 0;
+  width: 110%;
+  height: 90px;
+  background: #fffdf7;
+  border-radius: 50% 50% 0 0;
+}
+header {
+  max-width: 900px;
+  margin: 0 auto 26px;
+  text-align: center;
+  background: var(--cream);
+  border: 5px solid #b97935;
+  border-radius: 28px;
+  padding: 17px 12px;
+  box-shadow: 0 7px 0 #8e542b, 0 12px 22px #3c7e9940;
+  position: relative;
+}
+header::before {
+  content: "🌿 🎀 🌿";
+  display: block;
+  font-size: 22px;
+}
+h1 {
+  margin: 4px 0;
+  color: var(--red);
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 6vw, 60px);
+  line-height: 1.05;
+}
+.subtitle {
+  font-family: Georgia, serif;
+  font-size: clamp(17px, 3vw, 25px);
+  font-weight: bold;
+  color: var(--green);
+}
+.tagline {
+  margin: 12px 0 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+.santa {
+  text-align: center;
+  font-size: clamp(42px, 7vw, 72px);
+  margin: 6px 0;
+  filter: drop-shadow(0 3px 1px #7c6c5530);
+}
+.message {
+  max-width: 620px;
+  margin: 0 auto 20px;
+  text-align: center;
+  background: #fff9e8;
+  border: 2px solid #e8bd60;
+  border-radius: 18px;
+  padding: 12px;
+  font-weight: bold;
+  box-shadow: 0 4px 0 #e6c37d;
+}
+.grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(7px, 1.6vw, 16px);
+  position: relative;
+}
+.door {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(76px, 13vw, 132px);
+  padding: 8px 2px;
+  border: 4px solid #e6bd67;
+  border-radius: 17px 17px 10px 10px;
+  background: var(--red);
+  color: white;
+  box-shadow: inset 0 0 0 3px #ffffff25, 0 5px 0 #8d4c32;
+  cursor: pointer;
+  transition: transform .15s, filter .15s;
+  font: inherit;
+  overflow: hidden;
+}
+.door:nth-child(even) { background: var(--green); }
+.door:not(:disabled):hover {
+  transform: translateY(-5px) rotate(-1deg);
+  filter: brightness(1.1);
+}
+.door:focus-visible {
+  outline: 4px solid #173f2d;
+  outline-offset: 3px;
+}
+.door:disabled {
+  cursor: not-allowed;
+  filter: saturate(.65) brightness(.92);
+}
+.door::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 #d9e9f1;
+}
+.number {
+  display: block;
+  font-size: clamp(23px, 4vw, 38px);
+  font-weight: 900;
+  text-shadow: 0 2px 2px #0003;
+  margin-top: 8px;
+}
+.symbol {
+  display: block;
+  font-size: clamp(16px, 3vw, 26px);
+  margin-top: 4px;
+}
+.knob {
+  position: absolute;
+  right: 5px;
+  top: 52%;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #a76d25;
+}
+.lock {
+  display: block;
+  font-size: 13px;
+  margin-top: 2px;
+}
+.footer {
+  text-align: center;
+  margin: 32px auto 0;
+  font-size: 30px;
+}
+#previewNote {
+  text-align: center;
+  font-size: 13px;
+  margin: 15px auto;
+  color: #315e4b;
+}
+dialog {
+  width: min(92%, 520px);
+  border: 5px solid #e8bd60;
+  border-radius: 25px;
+  padding: 25px;
+  background: var(--cream);
+  color: #244b3a;
+  box-shadow: 0 15px 60px #173f2d66;
+  text-align: center;
+}
+dialog::backdrop { background: #153b2bb8; }
+#activityIcon { font-size: 54px; }
+#activityTitle {
+  font-family: Georgia, serif;
+  font-size: 30px;
+  color: var(--red);
+  margin: 8px 0;
+}
+#activityDescription { font-size: 18px; line-height: 1.5; }
+#supplies {
+  background: white;
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  text-align: left;
+  line-height: 1.6;
+}
+.close {
+  border: 0;
+  border-radius: 25px;
+  padding: 12px 24px;
+  background: var(--green);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+@media (max-width: 520px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .door { min-height: 88px; }
+  .village { padding-left: 10px; padding-right: 10px; }
+  .village::before { top: 165px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="snow" aria-hidden="true"></div>
+<main class="village">
+  <header>
+    <div style="font-size:22px">🎄 ✨ 🎄</div>
+    <h1>Our Family Advent Calendar</h1>
+    <div class="subtitle">December 1 – 24</div>
+    <p class="tagline">🎁 Each day brings a new surprise! 🎁</p>
+  </header>
+
+  <div class="santa" aria-label="Santa Claus">🎅🏻 🎁 ⛄</div>
+  <div class="message" id="status" aria-live="polite">
+    Choose today's door to discover your Christmas surprise!
+  </div>
+
+  <section class="grid" id="doors" aria-label="Advent calendar doors"></section>
+
+  <p id="previewNote"></p>
+  <div class="footer" aria-hidden="true">🎄 🎁 ⭐ 🎄</div>
+</main>
+
+<dialog id="reveal">
+  <div id="activityIcon">🎄</div>
+  <h2 id="activityTitle">Today's Surprise!</h2>
+  <p id="activityDescription"></p>
+  <div id="supplies"></div>
+  <button class="close" id="closeButton">Back to the village</button>
+</dialog>
+
+<script>
+// Replace these sample activities with your family's plans later.
+const activities = [
+  { title: "Christmas Cookie Decorating", icon: "🍪", description: "Let's decorate sweet treats with icing and sprinkles!", supplies: "Sugar cookies, icing, sprinkles, plates" },
+  { title: "Christmas Movie Night", icon: "🎬", description: "Put on cozy pajamas and enjoy a favorite holiday movie.", supplies: "Movie, blankets, popcorn, favorite snacks" },
+  { title: "Make Paper Snowflakes", icon: "❄️", description: "Cut and unfold paper to make beautiful winter snowflakes.", supplies: "White paper, child-safe scissors, string or tape" },
+  { title: "Hot Chocolate Bar", icon: "☕", description: "Create your own special cup of hot chocolate.", supplies: "Hot chocolate, marshmallows, whipped cream, mugs" },
+  { title: "Christmas Craft Time", icon: "🎨", description: "Make a special decoration for the tree.", supplies: "Paper, crayons, glue, ribbon, craft supplies" },
+  { title: "Give Someone a Gift", icon: "🎁", description: "Make or choose a little surprise to brighten someone's day.", supplies: "Paper, markers, gift wrap, or a small handmade gift" },
+  { title: "Build a Blanket Fort", icon: "🏠", description: "Build a cozy hideaway and read a Christmas story.", supplies: "Blankets, pillows, books, flashlight" },
+  { title: "Christmas Dance Party", icon: "💃", description: "Turn up your favorite holiday songs and dance together!", supplies: "Christmas playlist and plenty of dancing space" },
+  { title: "Make a Thank-You Card", icon: "💌", description: "Create a card for someone who makes your life special.", supplies: "Cardstock, markers, stickers, envelopes" },
+  { title: "Gingerbread Fun", icon: "🏠", description: "Build and decorate a delicious gingerbread creation.", supplies: "Gingerbread kit or graham crackers, icing, candy" },
+  { title: "Winter Nature Walk", icon: "🌲", description: "Bundle up and look for signs of winter outside.", supplies: "Coats, hats, gloves, optional nature checklist" },
+  { title: "Family Game Night", icon: "🎲", description: "Choose a favorite board game and play together.", supplies: "A favorite board game and a snack" },
+  { title: "Make Reindeer Food", icon: "🦌", description: "Mix a little treat for a magical Christmas Eve.", supplies: "Rolled oats and bird-safe edible decorations; scatter outdoors responsibly" },
+  { title: "Read a Christmas Story", icon: "📚", description: "Snuggle up and read a favorite holiday book together.", supplies: "A Christmas book, pillows, blankets" },
+  { title: "Decorate Ornaments", icon: "⭐", description: "Make a new ornament to remember this Christmas.", supplies: "Plain ornaments, markers, stickers, ribbon" },
+  { title: "Christmas Scavenger Hunt", icon: "🔎", description: "Search the house for festive colors and decorations.", supplies: "A simple list of things to find" },
+  { title: "Make a Kindness Chain", icon: "❤️", description: "Write kind things you can do for others on paper links.", supplies: "Colored paper, scissors, tape, markers" },
+  { title: "Bake Something Together", icon: "🧁", description: "Choose a simple holiday recipe and make it together.", supplies: "Ingredients for your chosen recipe and an apron" },
+  { title: "Pajama Breakfast", icon: "🥞", description: "Have a cozy breakfast in your pajamas.", supplies: "Breakfast ingredients and festive music" },
+  { title: "Wrap a Present", icon: "🎀", description: "Practice wrapping a gift for someone you love.", supplies: "A small gift, wrapping paper, tape, ribbon" },
+  { title: "Christmas Puzzle", icon: "🧩", description: "Work together on a holiday puzzle.", supplies: "A puzzle suitable for your family" },
+  { title: "Visit Christmas Lights", icon: "✨", description: "Take a drive or walk to admire the neighborhood lights.", supplies: "Coats, comfortable shoes, optional travel mug" },
+  { title: "Make a Holiday Playlist", icon: "🎵", description: "Everyone picks favorite songs for a family playlist.", supplies: "A device to play music and song ideas" },
+  { title: "Christmas Eve Surprise", icon: "🎅", description: "It's Christmas Eve! Enjoy a special family tradition.", supplies: "Your favorite Christmas Eve treats and traditions" }
+];
+
+const symbols = ["❄️", "🎄", "🎁", "⭐", "🍬", "✨"];
+const params = new URLSearchParams(window.location.search);
+const previewMode = params.get("preview") === "1";
+const today = new Date();
+const isDecember = today.getMonth() === 11;
+const dateNumber = isDecember ? today.getDate() : 0;
+const validDay = isDecember && dateNumber >= 1 && dateNumber <= 24;
+const doors = document.getElementById("doors");
+const status = document.getElementById("status");
+const previewNote = document.getElementById("previewNote");
+const reveal = document.getElementById("reveal");
+
+if (previewMode) {
+  status.textContent = "✨ Preview mode: try any door to test your calendar!";
+  previewNote.textContent = "Preview mode is on. Remove ?preview=1 from the address to test normal date locking.";
+} else if (!isDecember) {
+  status.textContent = "Our Christmas surprises are waiting! Come back in December to open each day's door.";
+} else if (dateNumber > 24) {
+  status.textContent = "Our Advent calendar has finished for this year. Merry Christmas!";
+} else {
+  status.textContent = "It's December " + dateNumber + "! Open a door to discover your surprise.";
+}
+
+for (let day = 1; day <= 24; day++) {
+  const button = document.createElement("button");
+  button.className = "door";
+  button.type = "button";
+
+  const unlocked = previewMode || (validDay && day <= dateNumber);
+  button.disabled = !unlocked;
+  button.setAttribute("aria-label",
+    unlocked ? "Open day " + day : "Day " + day + ", locked until its date");
+
+  button.innerHTML =
+    '<span class="number">' + day + '</span>' +
+    '<span class="symbol">' + (unlocked ? symbols[(day - 1) % symbols.length] : "🔒") + '</span>' +
+    (unlocked ? "" : '<span class="lock">Wait!</span>') +
+    '<span class="knob" aria-hidden="true"></span>';
+
+  if (unlocked) {
+    button.addEventListener("click", () => {
+      const activity = activities[day - 1];
+      document.getElementById("activityIcon").textContent = activity.icon;
+      document.getElementById("activityTitle").textContent =
+        "Day " + day + ": " + activity.title;
+      document.getElementById("activityDescription").textContent =
+        activity.description;
+      document.getElementById("supplies").innerHTML =
+        "<strong>What you'll need:</strong><br>" +
+        activity.supplies.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      reveal.showModal();
+    });
+  }
+  doors.appendChild(button);
+}
+
+document.getElementById("closeButton").addEventListener("click", () => reveal.close());
+reveal.addEventListener("click", event => {
+  if (event.target === reveal) reveal.close();
+});
+</script>
+</body>
+</html>

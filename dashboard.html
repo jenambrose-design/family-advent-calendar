@@ -62,9 +62,9 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
   }
-  .everett { border-top: 7px solid #7da9d9; }
-  .juliana { border-top: 7px solid #d994b1; }
-  .otto { border-top: 7px solid #83b78b; }
+.everett { border-top: 7px solid #3b82f6; }
+.juliana { border-top: 7px solid #ec4899; }
+.otto { border-top: 7px solid #22c55e; }
   .child h2 { margin-bottom: 4px; }
   .age { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
   .section-label {
@@ -150,6 +150,17 @@ button:hover {
   background: #7c3aed;
 }
 
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
 </style>
 </head>
 <body>
@@ -362,13 +373,34 @@ function render() {
         "family-dashboard-" + dateKey + "-" + input.dataset.taskKey,
         String(input.checked)
       );
-      updateProgress();
+       updateProgress();
+      if (input.checked) celebrateChore();
     });
   });
   updateProgress();
 }
 
-function updateProgress() {
+
+function celebrateChore() {
+  const colors = ["#ff4d6d", "#ffd166", "#06d6a0", "#118ab2", "#a78bfa", "#ff9f1c"];
+
+  for (let i = 0; i < 45; i++) {
+    const piece = document.createElement("div");
+    piece.textContent = Math.random() > 0.5 ? "●" : "★";
+    piece.style.position = "fixed";
+    piece.style.left = Math.random() * 100 + "vw";
+    piece.style.top = "-20px";
+    piece.style.fontSize = (10 + Math.random() * 12) + "px";
+    piece.style.color = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.pointerEvents = "none";
+    piece.style.zIndex = "9999";
+    piece.style.animation = "confettiFall 1.8s ease-out forwards";
+
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 2000);
+  }
+}
+  function updateProgress() {
   const boxes = [...document.querySelectorAll("input[type=checkbox]")];
   const done = boxes.filter(box => box.checked).length;
   document.getElementById("progress").textContent =

@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Family Dashboard</title>
+<style>
+  :root {
+    --ink: #29364a;
+    --muted: #667085;
+    --paper: #fffdf9;
+    --line: #e7e5e0;
+    --green: #dcecdf;
+    --blue: #e3eafa;
+    --pink: #f9e3e9;
+    --gold: #f8edcf;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #f3f5f1;
+    color: var(--ink);
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    background: #334e43;
+    color: white;
+    padding: 28px 18px;
+    text-align: center;
+  }
+  header h1 { margin: 0; font-size: clamp(26px, 5vw, 38px); }
+  header p { margin: 8px 0 0; }
+  main { max-width: 1000px; margin: auto; padding: 20px; }
+  .top-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .panel, .child {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px #263b2410;
+  }
+  .panel h2, .child h2 { margin-top: 0; }
+  .calendar-link {
+    display: inline-block;
+    background: #334e43;
+    color: white;
+    padding: 11px 16px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .date { color: var(--muted); margin: 0 0 8px; }
+  .children {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .everett { border-top: 7px solid #7da9d9; }
+  .juliana { border-top: 7px solid #d994b1; }
+  .otto { border-top: 7px solid #83b78b; }
+  .child h2 { margin-bottom: 4px; }
+  .age { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .section-label {
+    font-weight: bold;
+    margin: 16px 0 6px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  label.task {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  label.task input {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    accent-color: #477c58;
+  }
+  label.task:has(input:checked) span {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+  .notice {
+    margin-top: 20px;
+    background: #fff7e3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  .reset-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  button {
+    border: 1px solid #c9d0c9;
+    border-radius: 9px;
+    padding: 10px 14px;
+    background: white;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 14px;
+  }
+  footer { text-align: center; color: var(--muted); padding: 24px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Our Family Dashboard</h1>
+  <p>A fresh day, a fresh start. Let's work together!</p>
+</header>
+
+<main>
+  <div class="top-grid">
+    <section class="panel">
+      <h2>📅 Family Schedule</h2>
+      <p>Check upcoming appointments, activities, and family plans.</p>
+      <a class="calendar-link"
+         href="https://calendar.google.com/calendar/"
+         target="_blank" rel="noopener">
+        Open Google Calendar
+      </a>
+      <p style="font-size:13px;color:#667085;margin-bottom:0">
+        Sign in to see your private Family Dashboard calendar.
+      </p>
+    </section>
+    <section class="panel">
+      <h2>🌟 Today's Checklist</h2>
+      <p class="date" id="today"></p>
+      <p id="progress">Let's get started!</p>
+      <p>Check off each chore when it's done.</p>
+      <button id="resetToday" type="button">Reset today's checkboxes</button>
+    </section>
+  </div>
+
+  <div class="children">
+    <section class="child everett">
+      <h2>💙 Everett</h2>
+      <div class="age">Age 14 · Weekly rotating chores</div>
+      <div class="section-label">Every day</div>
+      <div id="everett-daily"></div>
+      <div class="section-label">Shared chores this week</div>
+      <div id="everett-weekly"></div>
+      <div class="section-label weekend-label">Extra weekend chores</div>
+      <div id="everett-weekend"></div>
+    </section>
+
+    <section class="child juliana">
+      <h2>💗 Juliana</h2>
+      <div class="age">Age 12 · Weekly rotating chores</div>
+      <div class="section-label">Every day</div>
+      <div id="juliana-daily"></div>
+      <div class="section-label">Shared chores this week</div>
+      <div id="juliana-weekly"></div>
+      <div class="section-label weekend-label">Extra weekend chores</div>
+      <div id="juliana-weekend"></div>
+    </section>
+
+    <section class="child otto">
+      <h2>💚 Otto</h2>
+      <div class="age">Age 6 · My regular chores</div>
+      <div class="section-label">Every day</div>
+      <div id="otto-daily"></div>
+      <div class="section-label weekend-label">Extra weekend helper jobs</div>
+      <div id="otto-weekend"></div>
+    </section>
+  </div>
+
+  <div class="notice">
+    <strong>How the rotation works:</strong>
+    Everett and Juliana switch shared chore assignments every Monday.
+    Weekend chores are added on Saturday and Sunday. Otto keeps his
+    regular chores and helps with simple extra jobs on weekends.
+  </div>
+
+  <div class="reset-row">
+    <button id="clearAll" type="button">Clear all checkboxes</button>
+  </div>
+</main>
+
+<footer>Made with love for our family ❤️</footer>
+
+<script>
+const chores = {
+  everett: {
+    daily: [
+      "Make bed",
+      "Put dirty clothes in hamper",
+      "Keep bedroom floor tidy"
+    ],
+    weekly: [
+      "Do the dishes",
+      "Take out the trash",
+      "Vacuum shared living areas"
+    ],
+    weekend: [
+      "Clean bathroom surfaces",
+      "Complete and put away a load of laundry"
+    ]
+  },
+  juliana: {
+    daily: [
+      "Make bed",
+      "Put dirty clothes in hamper",
+      "Keep bedroom floor tidy"
+    ],
+    weekly: [
+      "Vacuum shared living areas",
+      "Do the dishes",
+      "Take out the trash"
+    ],
+    weekend: [
+      "Dust shared rooms",
+      "Fold and put away laundry"
+    ]
+  },
+  otto: {
+    daily: [
+      "Make bed (ask for help if needed)",
+      "Put toys away",
+      "Put dirty clothes in hamper",
+      "Put shoes in their place"
+    ],
+    weekend: [
+      "Help set out napkins",
+      "Tidy toys in shared spaces",
+      "Help sort clean socks with an adult"
+    ]
+  }
+};
+
+function mondayOf(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+
+function getWeekNumber(date) {
+  const firstMonday = new Date(2026, 0, 5);
+  const thisMonday = mondayOf(date);
+  return Math.floor((thisMonday - firstMonday) / (7 * 24 * 60 * 60 * 1000));
+}
+
+function isWeekend() {
+  const day = new Date().getDay();
+  return day === 0 || day === 6;
+}
+
+function addTasks(containerId, items, keyPrefix) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  items.forEach((item, index) => {
+    const label = document.createElement("label");
+    label.className = "task";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.dataset.taskKey = keyPrefix + "-" + index;
+    const span = document.createElement("span");
+    span.textContent = item;
+    label.append(input, span);
+    container.appendChild(label);
+  });
+}
+
+function render() {
+  const now = new Date();
+  const dateKey = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0")
+  ].join("-");
+  document.getElementById("today").textContent =
+    now.toLocaleDateString(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+
+  const week = getWeekNumber(now);
+  const everettGetsFirst = ((week % 2) + 2) % 2 === 0;
+  const everettWeekly = everettGetsFirst
+    ? chores.everett.weekly
+    : chores.juliana.weekly;
+  const julianaWeekly = everettGetsFirst
+    ? chores.juliana.weekly
+    : chores.everett.weekly;
+
+  addTasks("everett-daily", chores.everett.daily, "everett-daily");
+  addTasks("juliana-daily", chores.juliana.daily, "juliana-daily");
+  addTasks("otto-daily", chores.otto.daily, "otto-daily");
+  addTasks("everett-weekly", everettWeekly, "everett-weekly");
+  addTasks("juliana-weekly", julianaWeekly, "juliana-weekly");
+
+  const weekend = isWeekend();
+  document.querySelectorAll(".weekend-label").forEach(el => {
+    el.style.display = weekend ? "" : "none";
+  });
+  document.getElementById("everett-weekend").style.display =
+    weekend ? "" : "none";
+  document.getElementById("juliana-weekend").style.display =
+    weekend ? "" : "none";
+  document.getElementById("otto-weekend").style.display =
+    weekend ? "" : "none";
+
+  if (weekend) {
+    addTasks("everett-weekend", chores.everett.weekend, "everett-weekend");
+    addTasks("juliana-weekend", chores.juliana.weekend, "juliana-weekend");
+    addTasks("otto-weekend", chores.otto.weekend, "otto-weekend");
+  }
+
+  document.querySelectorAll("input[type=checkbox]").forEach(input => {
+    const saved = localStorage.getItem("family-dashboard-" + dateKey + "-" + input.dataset.taskKey);
+    input.checked = saved === "true";
+    input.addEventListener("change", () => {
+      localStorage.setItem(
+        "family-dashboard-" + dateKey + "-" + input.dataset.taskKey,
+        String(input.checked)
+      );
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const boxes = [...document.querySelectorAll("input[type=checkbox]")];
+  const done = boxes.filter(box => box.checked).length;
+  document.getElementById("progress").textContent =
+    done + " of " + boxes.length + " chores completed today.";
+}
+
+document.getElementById("resetToday").addEventListener("click", () => {
+  document.querySelectorAll("input[type=checkbox]").forEach(input => {
+    input.checked = false;
+    input.dispatchEvent(new Event("change"));
+  });
+});
+document.getElementById("clearAll").addEventListener("click", () => {
+  if (!confirm("Clear all visible checkboxes for today?")) return;
+  document.querySelectorAll("input[type=checkbox]").forEach(input => {
+    input.checked = false;
+    input.dispatchEvent(new Event("change"));
+  });
+});
+
+render();
+</script>
+</body>
+</html>

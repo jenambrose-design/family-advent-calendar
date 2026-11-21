@@ -258,6 +258,26 @@ dialog::backdrop { background: #153b2bb8; }
   font-weight: bold;
   cursor: pointer;
 }
+
+#bingoSection { margin-top: 18px; }
+#bingoSection h3 { color: var(--green); font-family: Georgia, serif; }
+.bingo-cards { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 14px 0; }
+.bingo-card { background: white; border: 2px solid #d5a94f; border-radius: 12px; padding: 10px; break-inside: avoid; }
+.bingo-card h4 { margin: 2px 0 8px; color: var(--red); }
+.bingo-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
+.bingo-cell { min-height: 54px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4px 2px; border: 1px solid #9ab6a5; border-radius: 5px; font-size: 11px; line-height: 1.15; overflow-wrap: anywhere; }
+.bingo-cell.free { background: #fff0bf; font-weight: bold; }
+.print-button { border: 0; border-radius: 20px; padding: 10px 18px; margin: 4px 0 14px; background: #b97935; color: white; font-weight: bold; cursor: pointer; }
+@media print {
+  body * { visibility: hidden !important; }
+  #bingoSection, #bingoSection * { visibility: visible !important; }
+  #bingoSection { display: block !important; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+  #bingoSection h3, #bingoSection p, #printBingo { display: none !important; }
+  .bingo-cards { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bingo-card { border: 1px solid #333; padding: 8px; page-break-inside: avoid; }
+  .bingo-cell { min-height: 58px; font-size: 10px; color: #000; }
+}
+
 @media (max-width: 520px) {
   .grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
   .door { min-height: 76px; padding: 6px 1px; border-width: 2px; }
@@ -302,36 +322,42 @@ dialog::backdrop { background: #153b2bb8; }
   <h2 id="activityTitle">Today's Surprise!</h2>
   <p id="activityDescription"></p>
   <div id="supplies"></div>
+  <section id="bingoSection" hidden>
+    <h3>Five Christmas Light Bingo Cards</h3>
+    <p>Print the cards before you go. First person to get five in a row wins!</p>
+    <div id="bingoCards" class="bingo-cards"></div>
+    <button type="button" class="print-button" id="printBingo">Print Bingo Cards</button>
+  </section>
   <button class="close" id="closeButton">Back to the village</button>
 </dialog>
 
 <script>
 // Replace these sample activities with your family's plans later.
 const activities = [
-  { title: "Christmas Cookie Decorating", icon: "🍪", description: "Let's decorate sweet treats with icing and sprinkles!", supplies: "Sugar cookies, icing, sprinkles, plates" },
-  { title: "Christmas Movie Night", icon: "🎬", description: "Put on cozy pajamas and enjoy a favorite holiday movie.", supplies: "Movie, blankets, popcorn, favorite snacks" },
+  { title: "Personalized Ornament Surprise", icon: "🎄", description: "Kick off Advent by unwrapping the personalized Christmas ornament made just for each family member. Take turns sharing what makes each ornament special, then hang them on the tree!", supplies: "Each family member's personalized ornament, ornament hooks, Christmas tree" },
   { title: "Make Paper Snowflakes", icon: "❄️", description: "Cut and unfold paper to make beautiful winter snowflakes.", supplies: "White paper, child-safe scissors, string or tape" },
   { title: "Hot Chocolate Bar", icon: "☕", description: "Create your own special cup of hot chocolate.", supplies: "Hot chocolate, marshmallows, whipped cream, mugs" },
+  { title: "Family Game Night", icon: "🎲", description: "Follow a scavenger hunt with clues to discover the family game for tonight. Once you find it, gather everyone together, choose teams if you like, and enjoy playing together! Every Family Game Night includes a game-finding scavenger hunt.", supplies: "A new or favorite family board game, clues for the scavenger hunt, and snacks" },
+  { title: "Christmas Cookie Decorating", icon: "🍪", description: "Let's decorate sweet treats with icing and sprinkles!", supplies: "Sugar cookies, icing, sprinkles, plates" },
+  { title: "Holiday House Craft", icon: "🏠", description: "Build and decorate a festive little holiday house together. Make it your own with windows, a snowy roof, lights, and other Christmas decorations!", supplies: "Small cardboard boxes or a paper house template, colored paper, markers, crayons, glue, scissors, cotton balls for snow, stickers, and other craft decorations" },
+  { title: "Christmas Light Bingo", icon: "🚗", description: "Take a drive to see Christmas lights! Each person gets a different bingo card. Mark off the decorations you spot and see who gets five in a row first. Five printable Christmas Light Bingo cards are included below.", supplies: "Printed Christmas Light Bingo cards, pens or pencils, clipboard or firm surface to write on", bingo: true },
+  { title: "Christmas Zoo Lights", icon: "🦁", description: "Bundle up and enjoy a festive evening seeing the zoo transformed with Christmas lights. Check the zoo's schedule and ticket information before you go!", supplies: "Zoo Lights tickets, warm coats, hats, gloves, comfortable shoes" },
+  { title: "Write Letters to the Elderly", icon: "💌", description: "Create cheerful holiday letters or cards to brighten the season for older adults in a local care home or community. Share kind words, drawings, and holiday wishes.", supplies: "Cardstock or stationery, markers, stickers, envelopes; coordinate delivery with the care home or community organization" },
+  { title: "Christmas Would You Rather & Breakfast Treat", icon: "🥞", description: "Start the morning with a special breakfast treat and a round of Christmas-themed Would You Rather questions before heading to school. Keep it light, silly, and fun for everyone!", supplies: "A favorite breakfast treat and a list of Christmas-themed Would You Rather questions" },
+  { title: "Christmas Movie Night", icon: "🎬", description: "Put on cozy pajamas, make some popcorn, and enjoy a favorite holiday movie together!", supplies: "Favorite Christmas movie, blankets, popcorn, favorite snacks" },
   { title: "Christmas Craft Time", icon: "🎨", description: "Make a special decoration for the tree.", supplies: "Paper, crayons, glue, ribbon, craft supplies" },
-  { title: "Give Someone a Gift", icon: "🎁", description: "Make or choose a little surprise to brighten someone's day.", supplies: "Paper, markers, gift wrap, or a small handmade gift" },
-  { title: "Build a Blanket Fort", icon: "🏠", description: "Build a cozy hideaway and read a Christmas story.", supplies: "Blankets, pillows, books, flashlight" },
-  { title: "Christmas Dance Party", icon: "💃", description: "Turn up your favorite holiday songs and dance together!", supplies: "Christmas playlist and plenty of dancing space" },
-  { title: "Make a Thank-You Card", icon: "💌", description: "Create a card for someone who makes your life special.", supplies: "Cardstock, markers, stickers, envelopes" },
-  { title: "Gingerbread Fun", icon: "🏠", description: "Build and decorate a delicious gingerbread creation.", supplies: "Gingerbread kit or graham crackers, icing, candy" },
-  { title: "Winter Nature Walk", icon: "🌲", description: "Bundle up and look for signs of winter outside.", supplies: "Coats, hats, gloves, optional nature checklist" },
-  { title: "Family Game Night", icon: "🎲", description: "Choose a favorite board game and play together.", supplies: "A favorite board game and a snack" },
-  { title: "Make Reindeer Food", icon: "🦌", description: "Mix a little treat for a magical Christmas Eve.", supplies: "Rolled oats and bird-safe edible decorations; scatter outdoors responsibly" },
-  { title: "Read a Christmas Story", icon: "📚", description: "Snuggle up and read a favorite holiday book together.", supplies: "A Christmas book, pillows, blankets" },
-  { title: "Decorate Ornaments", icon: "⭐", description: "Make a new ornament to remember this Christmas.", supplies: "Plain ornaments, markers, stickers, ribbon" },
-  { title: "Christmas Scavenger Hunt", icon: "🔎", description: "Search the house for festive colors and decorations.", supplies: "A simple list of things to find" },
-  { title: "Make a Kindness Chain", icon: "❤️", description: "Write kind things you can do for others on paper links.", supplies: "Colored paper, scissors, tape, markers" },
-  { title: "Bake Something Together", icon: "🧁", description: "Choose a simple holiday recipe and make it together.", supplies: "Ingredients for your chosen recipe and an apron" },
-  { title: "Pajama Breakfast", icon: "🥞", description: "Have a cozy breakfast in your pajamas.", supplies: "Breakfast ingredients and festive music" },
-  { title: "Wrap a Present", icon: "🎀", description: "Practice wrapping a gift for someone you love.", supplies: "A small gift, wrapping paper, tape, ribbon" },
+  { title: "Gingerbread House Decorating", icon: "🍬", description: "Build and decorate gingerbread houses together! Get creative with candy, icing, and all kinds of festive decorations. Take a family picture of everyone's finished houses.", supplies: "Gingerbread house kits or graham crackers, icing, assorted candies and decorations, plates or cardboard bases" },
+  { title: "Kings Island & Make a Wish", icon: "🎢", description: "Weather permitting, spend the day enjoying the holiday fun at Kings Island! While you're together, have each person write down a wish, hope, or goal for the coming year. Seal each person's wish in an envelope, write their name and the year on it, and save the envelopes to open next Christmas. If the weather doesn't cooperate, use Day 15 as the backup day.", supplies: "Kings Island tickets and any items needed for the visit; paper, pens, envelopes, and a keepsake box for the sealed wishes. Check Kings Island's operating schedule before your visit." },
+  { title: "Kings Island Backup Day & The Story of Jesus", icon: "✝️", description: "If weather prevented your Kings Island visit on Day 14, today is your backup day. Also make time to gather as a family and read the story of Jesus' birth from the Bible. Read Luke 1:26–38, Matthew 1:18–25, Luke 2:1–20, and Matthew 2:1–12. Talk together about the angel's message, Jesus' birth, the shepherds, and the wise men's visit.", supplies: "A family Bible. Optional additional reading: John 1:1–14, which explains the meaning of Jesus coming into the world." },
+  { title: "Write Letters to Grandmas", icon: "💌", description: "Write heartfelt Christmas letters or cards to Grandma(s). Share favorite memories, tell them what you love about them, and add drawings or pictures to make each letter extra special.", supplies: "Cardstock or stationery, envelopes, pens, markers, stickers, and family photos or drawings if desired" },
   { title: "Christmas Puzzle", icon: "🧩", description: "Work together on a holiday puzzle.", supplies: "A puzzle suitable for your family" },
-  { title: "Visit Christmas Lights", icon: "✨", description: "Take a drive or walk to admire the neighborhood lights.", supplies: "Coats, comfortable shoes, optional travel mug" },
-  { title: "Make a Holiday Playlist", icon: "🎵", description: "Everyone picks favorite songs for a family playlist.", supplies: "A device to play music and song ideas" },
-  { title: "Christmas Eve Surprise", icon: "🎅", description: "It's Christmas Eve! Enjoy a special family tradition.", supplies: "Your favorite Christmas Eve treats and traditions" }
+  { title: "Cold-Weather Pickleball & Hot Cocoa", icon: "🏓", description: "Bundle up and head outside for a family game of pickleball, even if it's chilly! Afterward, come inside, warm up, and enjoy hot cocoa together. Adjust or move the game indoors if conditions are too cold, wet, or unsafe.", supplies: "Pickleball paddles, balls, a safe court or play area, warm layers, and hot cocoa" },
+  { title: "Family Game Night: Scavenger Hunt Surprise!", icon: "🎲", description: "It's another Family Game Night! Follow a set of clues around the house to discover the new family game waiting to be played. Once you find it, gather everyone together and enjoy game night. Every Family Game Night includes a scavenger hunt to find the game.", supplies: "A new family game, scavenger hunt clues hidden around the house, and snacks" },
+  { title: "Christmas Game Challenge", icon: "🏆", description: "Play a few quick Christmas-themed Minute-to-Win-It challenges. Keep score and crown the family champion!", supplies: "Plastic cups, marshmallows, candy canes, cotton balls, spoons, timer" },
+  { title: "Decorate Ornaments", icon: "⭐", description: "Make a new ornament to remember this Christmas.", supplies: "Plain ornaments, markers, stickers, ribbon" },
+  { title: "Kings Island Day – Round Two!", icon: "🎢", description: "Weather permitting and if Kings Island is operating, enjoy another day of holiday fun at the park! If the weather or schedule doesn't cooperate, have a Christmas Family Camp-In at home: build a cozy blanket fort, make popcorn and hot cocoa, play a family game, and enjoy a Christmas movie together.", supplies: "For Kings Island: tickets, warm clothes, and anything needed for the visit. At-home backup: blankets and pillows for a fort, popcorn, hot cocoa, a family game, and a favorite Christmas movie. Check Kings Island's operating schedule before your visit." },
+  { title: "Our Year in Pictures", icon: "📸", description: "The kids will look through the pictures on their phones and create a presentation recapping their year. Everett and Juliana can put together their own presentations, while Mom works with Otto to make his. Share favorite memories, funniest moments, trips, accomplishments, and things everyone is proud of!", supplies: "Phones with family photos, a device or screen to show the presentations, and Mom's help for Otto's recap" },
+  { title: "Christmas Eve Surprise", icon: "🎅", description: "Open special Christmas Eve boxes filled with cozy surprises, then follow a scavenger hunt with clues leading to one special family surprise. Enjoy the treats and make it a new Christmas Eve tradition!", supplies: "Christmas Eve boxes with pajamas, hot cocoa, popcorn, a book or movie, and small surprises; scavenger hunt clues; one special family surprise" }
 ];
 
 const symbols = ["❄️", "🎄", "🎁", "⭐", "🍬", "✨"];
@@ -345,6 +371,53 @@ const doors = document.getElementById("doors");
 const status = document.getElementById("status");
 const previewNote = document.getElementById("previewNote");
 const reveal = document.getElementById("reveal");
+const bingoSection = document.getElementById("bingoSection");
+const bingoCards = document.getElementById("bingoCards");
+
+const bingoItems = [
+  "Red lights", "Green lights", "Blue lights", "White lights", "Multicolored lights",
+  "A lit-up reindeer", "A snowman", "A Santa", "A Christmas tree", "A candy cane",
+  "An inflatable decoration", "A wreath", "A nativity scene", "A star", "A snowflake",
+  "A light-up present", "A penguin", "A train", "A giant ornament", "A glowing angel",
+  "A house covered in lights", "A window display", "A moving decoration", "A character from a movie"
+];
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function createBingoCards() {
+  bingoCards.innerHTML = "";
+  for (let cardNumber = 1; cardNumber <= 5; cardNumber++) {
+    const card = document.createElement("div");
+    card.className = "bingo-card";
+    const heading = document.createElement("h4");
+    heading.textContent = "Player " + cardNumber;
+    card.appendChild(heading);
+    const grid = document.createElement("div");
+    grid.className = "bingo-grid";
+    const items = shuffle(bingoItems);
+    for (let cell = 0; cell < 25; cell++) {
+      const square = document.createElement("div");
+      square.className = "bingo-cell";
+      if (cell === 12) {
+        square.classList.add("free");
+        square.textContent = "FREE SPACE";
+      } else {
+        const itemIndex = cell < 12 ? cell : cell - 1;
+        square.textContent = items[itemIndex];
+      }
+      grid.appendChild(square);
+    }
+    card.appendChild(grid);
+    bingoCards.appendChild(card);
+  }
+}
 
 if (previewMode) {
   status.textContent = "✨ Preview mode: try any door to test your calendar!";
@@ -400,6 +473,8 @@ for (let day = 1; day <= 24; day++) {
       document.getElementById("supplies").innerHTML =
         "<strong>What you'll need:</strong><br>" +
         activity.supplies.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      bingoSection.hidden = !activity.bingo;
+      if (activity.bingo) createBingoCards();
       reveal.showModal();
     });
   }
@@ -407,6 +482,7 @@ for (let day = 1; day <= 24; day++) {
 }
 
 document.getElementById("closeButton").addEventListener("click", () => reveal.close());
+document.getElementById("printBingo").addEventListener("click", () => window.print());
 reveal.addEventListener("click", event => {
   if (event.target === reveal) reveal.close();
 });
